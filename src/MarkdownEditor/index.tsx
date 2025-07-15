@@ -24,6 +24,7 @@ import {
   CustomTextKey,
 } from './custom-types.d';
 import { initialValue } from "./mock";
+import HeadLine from "./components/HeadLine";
 import "./iconfont.css";
 
 const HOTKEYS: Record<string, CustomTextKey> = {
@@ -40,7 +41,7 @@ type AlignType = (typeof TEXT_ALIGN_TYPES)[number]
 type ListType = (typeof LIST_TYPES)[number]
 type CustomElementFormat = CustomElementType | AlignType | ListType
 
-const RichTextExample = () => {
+const MarkdownEditor = () => {
   const renderElement = useCallback(
     (props: RenderElementProps) => <Element {...props} />,
     []
@@ -67,6 +68,7 @@ const RichTextExample = () => {
         <BlockButton format="center" icon="format_align_center" />
         <BlockButton format="right" icon="format_align_right" />
         <BlockButton format="justify" icon="format_align_justify" />
+        <HeadLine />
       </Toolbar>
       <Editable
         renderElement={renderElement}
@@ -294,4 +296,4 @@ const isAlignElement = (
 
 
 
-export default RichTextExample
+export default MarkdownEditor;

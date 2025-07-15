@@ -1,11 +1,7 @@
 import { css, cx } from '@emotion/css';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
-
-interface BaseProps {
-    className: string;
-    [key: string]: any;
-};
+import { BaseProps } from "./toobar-types";
 
 type ButtonProps = PropsWithChildren<{
     active: boolean;
@@ -54,8 +50,12 @@ export const Icon = React.forwardRef<HTMLSpanElement,PropsWithChildren<BaseProps
         'material-icons',
         className,
         css`
-          font-size: 18px;
-          vertical-align: text-bottom;
+          vertical-align: middle;
+          padding:5px;
+          border-radius: 6px;
+           &:hover{
+             background:#F4F5F5;
+           }
         `
       )}
     />
@@ -95,13 +95,13 @@ export const Menu = React.forwardRef<HTMLDivElement,PropsWithChildren<BaseProps>
       ref={ref}
       className={cx(
         className,
-        css`
+          css`
           & > * {
             display: inline-block;
           }
 
           & > * + * {
-            margin-left: 15px;
+            margin-left: 5px;
           }
         `
       )}
@@ -131,6 +131,8 @@ export const Toolbar = React.forwardRef<HTMLDivElement,PropsWithChildren<BasePro
           margin: 0 -20px;
           border-bottom: 2px solid #eee;
           margin-bottom: 20px;
+          display:flex;
+          align-items:center;
         `
       )}
     />
