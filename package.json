@@ -75,9 +75,11 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@arco-design/web-react": "^2.66.2",
     "@emotion/css": "^11.13.5",
     "dumi-theme-antd": "^0.4.4",
     "is-hotkey": "^0.2.0",
+    "laser-utils": "^0.0.5-alpha.27",
     "material-symbols": "^0.32.0",
     "slate": "^0.117.2",
     "slate-dom": "^0.117.4",

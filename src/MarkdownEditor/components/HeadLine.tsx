@@ -2,8 +2,10 @@ import { CheckOutlined } from '@ant-design/icons';
 import { css, cx } from '@emotion/css';
 import { Dropdown, Space } from 'antd';
 import React, { PropsWithChildren } from 'react';
+import { useSlate } from 'slate-react';
 import { Icon } from './index';
 import { BaseProps } from './toobar-types';
+import { toggleBlock } from "../index";
 
 // Define font sizes for different headings
 const FONT_SIZES = {
@@ -16,19 +18,24 @@ const FONT_SIZES = {
 
 // Define the type for the hotkeys
 const HeadHotKeys = [
- { key: '正文', hotkey: '⌥ ⌘ 0', fontSize: FONT_SIZES.h4 },
-  { key: '标题1', hotkey: '⌥ ⌘ 1', fontSize: FONT_SIZES.h1 },
-  { key: '标题2', hotkey: '⌥ ⌘ 2', fontSize: FONT_SIZES.h2 },
-  { key: '标题3', hotkey: '⌥ ⌘ 3', fontSize: FONT_SIZES.h3 },
-  { key: '标题4', hotkey: '⌥ ⌘ 4', fontSize: FONT_SIZES.h4 },
-  { key: '标题5', hotkey: '⌥ ⌘ 5', fontSize: FONT_SIZES.h5 },
-  { key: '标题6', hotkey: '⌥ ⌘ 6', fontSize: FONT_SIZES.h5 },
+  { label: '正文', hotkey: '⌥ ⌘ 0', fontSize: FONT_SIZES.h4,key:'heading-text' },
+  { label: '标题1', hotkey: '⌥ ⌘ 1', fontSize: FONT_SIZES.h1 ,key:'heading-one'},
+  { label: '标题2', hotkey: '⌥ ⌘ 2', fontSize: FONT_SIZES.h2 ,key:'heading-two'},
+  { label: '标题3', hotkey: '⌥ ⌘ 3', fontSize: FONT_SIZES.h3 ,key:'heading-three'},
+  { label: '标题4', hotkey: '⌥ ⌘ 4', fontSize: FONT_SIZES.h4 ,key:'heading-four'},
+  { label: '标题5', hotkey: '⌥ ⌘ 5', fontSize: FONT_SIZES.h5,key:'heading-five' },
+  { label: '标题6', hotkey: '⌥ ⌘ 6', fontSize: FONT_SIZES.h5 ,key:'heading-six'},
 ];
 
 type HeadLineProps = PropsWithChildren<{ selectedKey: string } & BaseProps>;
 
 // Function to get the label for each item in the dropdown
-const getItemLabel = (key: string, hotkey: string, fontSize: string, checked: boolean) => (
+const getItemLabel = (
+  key: string,
+  hotkey: string,
+  fontSize: string,
+  checked: boolean,
+) => (
   <div
     className={css`
       display: flex;
@@ -83,44 +90,44 @@ const getItemLabel = (key: string, hotkey: string, fontSize: string, checked: bo
   </div>
 );
 
-const HeadLine = React.forwardRef<
-  HTMLSpanElement,
-  HeadLineProps
-  >(({
-    className,
-    selectedKey = "正文",
-    ...props
-  }, ref) => {
-    
-  const items = HeadHotKeys.map(({ key, hotkey, fontSize }) => ({
-    key,
-    label: getItemLabel(key, hotkey, fontSize, selectedKey === key),
-  }));
+const HeadLine = React.forwardRef<HTMLSpanElement, HeadLineProps>(
+  ({ className, selectedKey = '正文', ...props }, ref) => {
+    const editor = useSlate();
 
-  return (
-    <Dropdown menu={{ items }}>
-      <span
-        {...props}
-        ref={ref}
-        className={cx(
-          className,
-          css`
-            cursor: pointer;
-            padding: 5px 5px 5px 10px;
-            border-radius: 6px;
-            &:hover {
-              background: #f4f5f5;
-            }
-          `,
-        )}
-      >
-        <Space>
-          {selectedKey} 
-          <Icon>arrow_drop_down</Icon>
-        </Space>
-      </span>
-    </Dropdown>
-  );
-});
+    const items = HeadHotKeys.map(({ key, hotkey, fontSize,label }) => ({
+      key,
+      label: getItemLabel(label, hotkey, fontSize, selectedKey === key),
+    }));
+
+    return (
+      <Dropdown menu={{
+        items, onClick: (value) => {
+          toggleBlock(editor,value.key)
+        console.log(value,"===values")
+      } }}>
+        <span
+          {...props}
+          ref={ref}
+          className={cx(
+            className,
+            css`
+              cursor: pointer;
+              padding: 5px 5px 5px 10px;
+              border-radius: 6px;
+              &:hover {
+                background: #f4f5f5;
+              }
+            `,
+          )}
+        >
+          <Space>
+            {selectedKey}
+            <Icon>arrow_drop_down</Icon>
+          </Space>
+        </span>
+      </Dropdown>
+    );
+  },
+);
 
 export default HeadLine;

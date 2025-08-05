@@ -15,7 +15,7 @@ import {
   useSlate,
   withReact,
 } from 'slate-react';
-import { Button, Icon, Toolbar } from './components';
+import { Button, Icon ,Toolbar} from './components';
 import {
   CustomEditor,
   CustomElement,
@@ -26,6 +26,7 @@ import {
 import { initialValue } from "./mock";
 import HeadLine from "./components/HeadLine";
 import "./iconfont.css";
+import './index.less';
 
 const HOTKEYS: Record<string, CustomTextKey> = {
   'mod+b': 'bold',
@@ -53,6 +54,7 @@ const MarkdownEditor = () => {
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
 
   return (
+    <div className='slate-container'>
     <Slate editor={editor} initialValue={initialValue}>
       <Toolbar>
         <MarkButton format="bold" icon="format_bold" />
@@ -86,43 +88,12 @@ const MarkdownEditor = () => {
           }
         }}
       />
-    </Slate>
+      </Slate>
+      </div>
   )
 }
 
-const toggleBlock = (editor: CustomEditor, format: CustomElementFormat) => {
-  const isActive = isBlockActive(
-    editor,
-    format,
-    isAlignType(format) ? 'align' : 'type'
-  )
-  const isList = isListType(format)
 
-  Transforms.unwrapNodes(editor, {
-    match: n =>
-      !Editor.isEditor(n) &&
-      SlateElement.isElement(n) &&
-      isListType(n.type) &&
-      !isAlignType(format),
-    split: true,
-  })
-  let newProperties: Partial<SlateElement>
-  if (isAlignType(format)) {
-    newProperties = {
-      align: isActive ? undefined : format,
-    }
-  } else {
-    newProperties = {
-      type: isActive ? 'paragraph' : isList ? 'list-item' : format,
-    }
-  }
-  Transforms.setNodes<SlateElement>(editor, newProperties)
-
-  if (!isActive && isList) {
-    const block = { type: format, children: [] }
-    Transforms.wrapNodes(editor, block)
-  }
-}
 
 const toggleMark = (editor: CustomEditor, format: CustomTextKey) => {
   const isActive = isMarkActive(editor, format)
@@ -294,6 +265,41 @@ const isAlignElement = (
   return 'align' in element
 }
 
+
+
+export const toggleBlock = (editor: CustomEditor, format: CustomElementFormat) => {
+  const isActive = isBlockActive(
+    editor,
+    format,
+    isAlignType(format) ? 'align' : 'type'
+  )
+  const isList = isListType(format)
+
+  Transforms.unwrapNodes(editor, {
+    match: n =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      isListType(n.type) &&
+      !isAlignType(format),
+    split: true,
+  })
+  let newProperties: Partial<SlateElement>
+  if (isAlignType(format)) {
+    newProperties = {
+      align: isActive ? undefined : format,
+    }
+  } else {
+    newProperties = {
+      type: isActive ? 'paragraph' : isList ? 'list-item' : format,
+    }
+  }
+  Transforms.setNodes<SlateElement>(editor, newProperties)
+
+  if (!isActive && isList) {
+    const block = { type: format, children: [] }
+    Transforms.wrapNodes(editor, block)
+  }
+}
 
 
 export default MarkdownEditor;
