@@ -2,14 +2,14 @@ import React from 'react';
 
 import { RenderElementProps, RenderLeafProps } from 'slate-react';
 import { DecoratedRange } from "slate";
-import { SlatePlugin, PluginManager } from "../types/plugin/index";
+import { EditorPlugin, PluginManager } from "../types/plugin/index";
 import {CustomEditor } from "../types/editor/index"
 
 
 export class SlatePluginManager implements PluginManager {
-  private plugins: SlatePlugin[]
+  private plugins: EditorPlugin[]
   
-  constructor(plugins: SlatePlugin[] = []) {
+  constructor(plugins: EditorPlugin[] = []) {
     this.plugins = plugins
   }
   
@@ -37,15 +37,21 @@ export class SlatePluginManager implements PluginManager {
     return (props: RenderLeafProps) => {
       // 允许多个插件叠加处理
       let children = props.children
+      let handled = false;
       
       this.plugins.forEach(plugin => {
-        if (plugin?.renderLeaf) {
-          const result = plugin.renderLeaf({ ...props, children })
-          if (result) children = result
+        // Only call match if it exists and is compatible with RenderLeafProps
+        if (plugin?.render && plugin.match(props as any)) {
+          children = plugin.render({ ...props, children })
+          handled = true;
         }
       })
+
+      if (!handled) { 
+        return <span {...props.attributes}>{children}</span>
+      }
       
-      return (<span {...props.attributes}>{children}</span>)
+      return children;
     }
   }
   
@@ -78,7 +84,7 @@ export class SlatePluginManager implements PluginManager {
   }
   
   // 添加新插件（运行时扩展）
-  addPlugin(plugin: SlatePlugin) {
+  addPlugin(plugin: EditorPlugin) {
     this.plugins.push(plugin)
   }
   
@@ -88,7 +94,7 @@ export class SlatePluginManager implements PluginManager {
   }
   
   // 获取所有插件
-  getPlugins(): ReadonlyArray<SlatePlugin> {
+  getPlugins(): ReadonlyArray<EditorPlugin> {
     return this.plugins
   }
 };

@@ -2,9 +2,9 @@ import React from 'react';
 import {
   CustomEditor,
   CustomTextKey,
-  Editor,
-  RenderElementProps,
 } from '../types/editor/index';
+import { Editor } from 'slate';
+import { RenderElementProps } from 'slate-react';
 import { BlockPlugin, EditorPlugin, LeafPlugin } from '../types/plugin/index';
 import {   CustomElementFormat } from '../types/plugin/element';
 import { toggleBlock, toggleMark } from '../utils/plugin';

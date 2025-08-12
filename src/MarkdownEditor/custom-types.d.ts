@@ -158,6 +158,8 @@ export type CustomText = {
   italic?: boolean
   code?: boolean
   underline?: boolean
+  inlineCode?: boolean
+  'inline-code'?: boolean
   strikethrough?: boolean
   // MARKDOWN PREVIEW SPECIFIC LEAF
   underlined?: boolean
@@ -184,13 +186,3 @@ export type CustomEditor = BaseEditor &
     nodeToDecorations?: Map<Element, Range[]>
 }
 
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: CustomEditor
-    Element: CustomElement
-    Text: CustomText
-    Range: BaseRange & {
-      [key: string]: unknown
-    }
-  }
-}

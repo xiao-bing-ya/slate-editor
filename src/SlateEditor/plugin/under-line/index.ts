@@ -2,22 +2,22 @@ import { RenderLeafProps } from 'slate-react';
 import { EditorPlugin } from '../../types/plugin';
 import { createLeafPlugin } from '../factory';
 
-export const BOLD_KEY = 'bold';
+export const UNDERLINE_KEY = 'underline';
 
 export interface TextElement {
-  [BOLD_KEY]?: boolean;
+  [UNDERLINE_KEY]?: boolean;
 };
 
-// 字体加粗
-export const BoldPlugin: EditorPlugin = createLeafPlugin({
-  key: BOLD_KEY,
-  format: BOLD_KEY,
-  tagName: 'strong',
+// 下划线
+export const UnderlinePlugin: EditorPlugin = createLeafPlugin({
+  key: UNDERLINE_KEY,
+  format: UNDERLINE_KEY,
+  tagName: 'u',
   shortcut: {
-    key: 'b',
+    key: 'u',
     modifier: 'ctrlKey',
   },
   match: (props: RenderLeafProps) => {
-    return !!props.leaf[BOLD_KEY];
+    return !!props.leaf[UNDERLINE_KEY];
   },
 });

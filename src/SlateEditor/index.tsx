@@ -5,6 +5,8 @@ import { Editable, ReactEditor, Slate, withReact } from 'slate-react';
 import { SlatePluginManager } from './plugin/manager';
 import { Banner } from './toolbar';
 import { CustomEditor, SlateEditorProps } from './types/editor/index';
+import { BoldPlugin, ItalicPlugin, UnderlinePlugin,InlineCodePlugin } from "./plugin";
+import { EditorPlugin } from './types/plugin';
 
 const createCustomEditor = (): CustomEditor => {
   return withReact(
@@ -12,7 +14,7 @@ const createCustomEditor = (): CustomEditor => {
   ) as CustomEditor;
 };
 
-const builtInPlugins: any[] = [];
+const builtInPlugins: EditorPlugin[] = [BoldPlugin,ItalicPlugin,UnderlinePlugin,InlineCodePlugin];
 
 const SlateEditor = ({
   readOnly = false,
@@ -21,6 +23,7 @@ const SlateEditor = ({
   plugins = [],
   className,
 }: SlateEditorProps) => {
+
   // 创建插件管理器
   const pluginManager = useMemo(
     () => new SlatePluginManager([...builtInPlugins, ...plugins]),
@@ -65,6 +68,15 @@ const SlateEditor = ({
     [editor, pluginManager],
   );
 
+  // 获取插件key 对应的 type 之间的映射
+  const Plugin_Key_Type = useMemo(() => {
+    return (pluginManager.getPlugins()??[]).map(plugin => ({
+      key: plugin.key,
+      type:plugin.type
+    }))
+   },[pluginManager,editor])
+
+
   return (
     <div className={className}>
       <Slate
@@ -72,7 +84,7 @@ const SlateEditor = ({
         initialValue={initialValue}
         onChange={handleChange}
       >
-        <Banner />
+        <Banner pluginsMap={ Plugin_Key_Type} />
         <Editable
           readOnly={readOnly}
           placeholder={placeholder}

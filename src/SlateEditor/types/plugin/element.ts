@@ -1,4 +1,4 @@
-import { Descendant} from "../editor/index";
+import { Descendant} from 'slate';
 export type ParagraphElement = {
     type: 'paragraph'
     align?: string

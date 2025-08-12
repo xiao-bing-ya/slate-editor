@@ -1,4 +1,4 @@
-import { CustomEditor, CustomTextKey, Editor, Element ,Transforms} from '../types/editor';
+import { CustomEditor, CustomTextKey } from '../types/editor';
 import {
   AlignType,
   CustomElement,
@@ -8,11 +8,12 @@ import {
   ListType,
   TEXT_ALIGN_TYPES,
 } from '../types/plugin/element';
+import { Editor, Element ,Transforms} from "slate";
 
 // 查看当前文本节点是否已经存在某个属性
 export const isMarkActive = (editor: CustomEditor, format: CustomTextKey) => {
   const marks = Editor.marks(editor);
-  return marks ? marks[format] === true : false;
+  return marks ? (marks as Record<string, unknown>)[format] === true : false;
 };
 
 // 切换文本节点的属性

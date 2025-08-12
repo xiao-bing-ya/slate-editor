@@ -26,14 +26,57 @@ import {
   UNDERLINE_KEY,
 } from '../constant';
 import './index.css';
+import { useSlate,ReactEditor } from "slate-react";
+import { Editor } from 'slate';
+import { PluginType,PLUGIN_TYPE} from "../../types/plugin/index";
 
-const Banner = () => {
+const Banner = ({ pluginsMap }: {
+  pluginsMap: Array<{
+    key: string;
+    type:PluginType
+  }>
+}) => {
+  const editor = useSlate();
+
+  /**
+   * 
+   * @param key 插件key
+   * @param e 
+   * 实现思路：
+   * 找到鼠标当前的位置
+   * 看是否有选区范围：
+   * 选中的节点是什么类型的，
+   *  如果是 block 类型，工具栏不需要的进行置灰不可操作，可以操作的action则需要对整体操作
+   *  如果是 inline 类型，工具栏不需要的进行置灰不可操作，可以操作的则需要对文本进行处理
+   */
+
+  const handleClickMenu = (key: string, e) => {
+    // 鼠标事件 e
+const domRange = window.getSelection()?.getRangeAt(0);
+if (domRange) {
+  // 将 DOM Range 转为 Slate Range
+  const slateRange = ReactEditor.toSlateRange(editor, domRange, { exactMatch: true });
+  if (slateRange) {
+    const [node, path] = Editor.node(editor, slateRange.focus);
+    // node 就是鼠标点击位置对应的节点
+  }
+}
+    // const pluginInfo = pluginsMap.find(plugin => plugin.key === key);
+    // if (pluginInfo?.key === PLUGIN_TYPE.BLOCK) {
+    //   // 块级节点插件
+    // } else if (pluginInfo?.key === PLUGIN_TYPE.INLINE) { 
+    //   // 叶子节点插件
+    // }
+    console.log(pluginInfo.type,pluginsMap,key,"===pluginType")
+  };
+  
   return (
     <div>
       <Menu
         mode="pop"
         className="menu-toolbar-container"
         onMouseUp={(e) => e.stopPropagation()}
+        onClickMenuItem={handleClickMenu}
       >
         <Menu.Item key={BOLD_KEY}>
           <IconBold />
@@ -47,7 +90,7 @@ const Banner = () => {
         <Menu.Item key={STRIKE_THROUGH_KEY}>
           <IconStrikethrough />
         </Menu.Item>
-        <Menu.Item key={INLINE_CODE_KEY}>
+        <Menu.Item key={INLINE_CODE_KEY} onClick={() => { editor.addMark('inlineCode',true)}}>
           <IconCode />
         </Menu.Item>
         <Menu.Item key={HYPER_LINK_KEY}>

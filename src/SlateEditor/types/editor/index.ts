@@ -1,19 +1,13 @@
 import {
   BaseEditor,
-  DecoratedRange,
   Descendant,
-  Editor,
-  Node,
-  NodeEntry,
-  Element,
-  Transforms
 } from 'slate';
 import { HistoryEditor } from 'slate-history';
-import { ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react';
+import { ReactEditor} from 'slate-react';
 import {EditorPlugin } from '../plugin/index';
 
 // 扩展编辑器类型
-type CustomEditor = BaseEditor &
+export type CustomEditor = BaseEditor &
   ReactEditor &
   HistoryEditor & {
     // 可添加自定义编辑器方法
@@ -27,8 +21,8 @@ export type CustomText = {
   code?: boolean
   underline?: boolean
   strikethrough?: boolean
+  inlineCode?: boolean
   // MARKDOWN PREVIEW SPECIFIC LEAF
-  underlined?: boolean
   title?: boolean
   list?: boolean
   hr?: boolean
@@ -39,7 +33,7 @@ export type CustomText = {
 // 文本节点可定制属性
 export type CustomTextKey = keyof Omit<CustomText, 'text'>
 
-interface SlateEditorProps {
+export interface SlateEditorProps {
   // 初始值
   initialValue?: Descendant[];
 
@@ -56,19 +50,14 @@ interface SlateEditorProps {
   className?: string;
 };
 
-export {
-  BaseEditor,
-  CustomEditor,
-  DecoratedRange,
-  Descendant,
-  Editor,
-  HistoryEditor,
-  Node,
-  NodeEntry,
-  ReactEditor,
-  RenderElementProps,
-  RenderLeafProps,
-  SlateEditorProps,
-  Element,
-  Transforms
-};
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: CustomEditor
+    // Element: CustomElement
+    Text: CustomText
+    // Range: BaseRange & {
+    //   [key: string]: unknown
+    // }
+  }
+}
+

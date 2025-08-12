@@ -2,22 +2,22 @@ import { RenderLeafProps } from 'slate-react';
 import { EditorPlugin } from '../../types/plugin';
 import { createLeafPlugin } from '../factory';
 
-export const BOLD_KEY = 'bold';
+export const ITALIC_KEY = 'italic';
 
 export interface TextElement {
-  [BOLD_KEY]?: boolean;
+  [ITALIC_KEY]?: boolean;
 };
 
-// 字体加粗
-export const BoldPlugin: EditorPlugin = createLeafPlugin({
-  key: BOLD_KEY,
-  format: BOLD_KEY,
-  tagName: 'strong',
+// 斜体
+export const ItalicPlugin: EditorPlugin = createLeafPlugin({
+  key: ITALIC_KEY,
+  format: ITALIC_KEY,
+  tagName: 'em',
   shortcut: {
-    key: 'b',
+    key: 'i',
     modifier: 'ctrlKey',
   },
   match: (props: RenderLeafProps) => {
-    return !!props.leaf[BOLD_KEY];
+    return !!props.leaf[ITALIC_KEY];
   },
 });
