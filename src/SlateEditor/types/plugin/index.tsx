@@ -19,7 +19,7 @@ export interface SlatePlugin {
   withEditor?: <T extends Editor>(editor: T) => T;
 
   /** 渲染元素组件 */
-  renderElement?: (props: RenderElementProps) => JSX.Element | null;
+  renderElement?: (props: RenderElementProps,editor:CustomEditor) => JSX.Element | null;
 
   /** 渲染叶子节点 */
   renderLeaf?: (props: RenderLeafProps) => JSX.Element | null;
@@ -35,6 +35,9 @@ export interface SlatePlugin {
 
   /** 编辑器变化回调 */
   onChange?: (value: Node[], editor: CustomEditor) => void;
+
+  /**插件自定义命令 */
+  commands?: Record<string, any>;
 }
 
 export type BlockPlugin = SlatePlugin & {
@@ -42,9 +45,9 @@ export type BlockPlugin = SlatePlugin & {
   /** 块节点匹配插件 */
   match: (props: RenderElementProps) => boolean;
   /** 渲染行节点 */
-  renderLine?: () => JSX.Element;
+  renderLine?: (props: RenderElementProps) => JSX.Element;
   /** 渲染块级子节点 */
-  render?: () => JSX.Element | null;
+  render?: (props: RenderElementProps,editor:CustomEditor) => JSX.Element | null;
   /** 注册的子节点插件 */
   WITH_LEAF_PLUGINS?: LeafPlugin[];
 };
@@ -66,7 +69,7 @@ export interface PluginManager {
   applyEditorExtensions: (editor: CustomEditor) => CustomEditor;
 
   /** 获取组合后的 renderElement 函数 */
-  getRenderElement: () => (props: RenderElementProps) => JSX.Element;
+  getRenderElement: () => (props: RenderElementProps,editor:CustomEditor) => JSX.Element;
 
   /** 获取组合后的 renderLeaf 函数 */
   getRenderLeaf: () => (props: RenderLeafProps) => JSX.Element;

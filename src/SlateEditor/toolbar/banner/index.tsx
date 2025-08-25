@@ -12,8 +12,12 @@ import {
   IconMenu,
   IconStrikethrough,
   IconUnderline,
+  IconApps
 } from '@arco-design/web-react/icon';
 import React from 'react';
+import { Editor } from 'slate';
+import { useSlate } from 'slate-react';
+import { PluginType,PLUGIN_TYPE } from '../../types/plugin/index';
 import {
   ALIGN_KEY,
   BOLD_KEY,
@@ -26,50 +30,87 @@ import {
   UNDERLINE_KEY,
 } from '../constant';
 import './index.css';
-import { useSlate,ReactEditor } from "slate-react";
-import { Editor } from 'slate';
-import { PluginType,PLUGIN_TYPE} from "../../types/plugin/index";
+import { toggleMark } from "../../utils/plugin";
 
-const Banner = ({ pluginsMap }: {
+const table_value = {
+  type: 'table',
+  children: [{
+    type: 'table-row',
+    children: [{
+      type: 'table-cell',
+      children: [{text:'1'}]
+    },{
+      type: 'table-cell',
+      children: [{text:'2'}]
+    },{
+      type: 'table-cell',
+      children: [{text:'3'}]
+    },{
+      type: 'table-cell',
+      children: [{text:'4'}]
+    }]
+  }, {
+     type: 'table-row',
+    children: [{
+      type: 'table-cell',
+      children: [{text:'5'}]
+    },{
+      type: 'table-cell',
+      children: [{text:'6'}]
+    },{
+      type: 'table-cell',
+      children: [{text:'7'}]
+    },{
+      type: 'table-cell',
+      children: [{text:'8'}]
+    }]
+  }]
+};
+
+
+const Banner = ({
+  pluginsMap,
+  CommandOperation
+}: {
   pluginsMap: Array<{
     key: string;
-    type:PluginType
-  }>
+    type: PluginType;
+  }>;
+  CommandOperation:Record<string,any>
 }) => {
   const editor = useSlate();
 
   /**
-   * 
+   *
    * @param key 插件key
-   * @param e 
+   * @param e
    * 实现思路：
-   * 找到鼠标当前的位置
-   * 看是否有选区范围：
+   * 点击工具栏的时候，获取当前选区，然后对选区范围内的内容应用操作
    * 选中的节点是什么类型的，
    *  如果是 block 类型，工具栏不需要的进行置灰不可操作，可以操作的action则需要对整体操作
    *  如果是 inline 类型，工具栏不需要的进行置灰不可操作，可以操作的则需要对文本进行处理
    */
 
   const handleClickMenu = (key: string, e) => {
-    // 鼠标事件 e
-const domRange = window.getSelection()?.getRangeAt(0);
-if (domRange) {
-  // 将 DOM Range 转为 Slate Range
-  const slateRange = ReactEditor.toSlateRange(editor, domRange, { exactMatch: true });
-  if (slateRange) {
+    // 获取当前选区
+    const slateRange = editor.selection;
+    if (!slateRange) return;
+
     const [node, path] = Editor.node(editor, slateRange.focus);
     // node 就是鼠标点击位置对应的节点
-  }
-}
-    // const pluginInfo = pluginsMap.find(plugin => plugin.key === key);
-    // if (pluginInfo?.key === PLUGIN_TYPE.BLOCK) {
-    //   // 块级节点插件
-    // } else if (pluginInfo?.key === PLUGIN_TYPE.INLINE) { 
-    //   // 叶子节点插件
-    // }
-    console.log(pluginInfo.type,pluginsMap,key,"===pluginType")
+   
+    const pluginInfo = pluginsMap.find(plugin => plugin.key === key);
+    if (pluginInfo?.type === PLUGIN_TYPE.BLOCK) {
+      // 块级节点插件
+      if (key === "table") { 
+        CommandOperation.insertTable(editor)
+      }
+    } else if (pluginInfo?.type === PLUGIN_TYPE.INLINE) {
+      // 叶子节点操作
+      toggleMark(editor, key as any);
+    }
   };
-  
+
   return (
     <div>
       <Menu
@@ -87,10 +128,18 @@ if (domRange) {
         <Menu.Item key={UNDERLINE_KEY}>
           <IconUnderline />
         </Menu.Item>
+        <Menu.Item key='table'>
+          <IconApps />
+        </Menu.Item>
         <Menu.Item key={STRIKE_THROUGH_KEY}>
           <IconStrikethrough />
         </Menu.Item>
-        <Menu.Item key={INLINE_CODE_KEY} onClick={() => { editor.addMark('inlineCode',true)}}>
+        <Menu.Item
+          key={INLINE_CODE_KEY}
+          onClick={() => {
+            editor.addMark('inlineCode', true);
+          }}
+        >
           <IconCode />
         </Menu.Item>
         <Menu.Item key={HYPER_LINK_KEY}>

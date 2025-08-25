@@ -3,7 +3,8 @@ import React from 'react';
 import { RenderElementProps, RenderLeafProps } from 'slate-react';
 import { DecoratedRange } from "slate";
 import { EditorPlugin, PluginManager } from "../types/plugin/index";
-import {CustomEditor } from "../types/editor/index"
+import { CustomEditor } from "../types/editor/index";
+import { PLUGIN_TYPE} from "../types/plugin/index";
 
 
 export class SlatePluginManager implements PluginManager {
@@ -20,11 +21,11 @@ export class SlatePluginManager implements PluginManager {
   }
   
   getRenderElement() {
-    return (props: RenderElementProps) => {
+    return (props: RenderElementProps,editor:CustomEditor) => {
       // 按顺序查找第一个匹配的渲染函数
       for (const plugin of this.plugins) {
-        if (plugin?.renderElement) {
-          const element = plugin.renderElement(props)
+        if (plugin.type === PLUGIN_TYPE.BLOCK&&  plugin?.match(props) && plugin?.renderElement) {
+          const element = plugin.renderElement(props,editor)
           if (element) return element
         }
       }
@@ -41,7 +42,7 @@ export class SlatePluginManager implements PluginManager {
       
       this.plugins.forEach(plugin => {
         // Only call match if it exists and is compatible with RenderLeafProps
-        if (plugin?.render && plugin.match(props as any)) {
+        if (plugin.type === PLUGIN_TYPE.INLINE &&  plugin?.render && plugin.match(props as any)) {
           children = plugin.render({ ...props, children })
           handled = true;
         }
@@ -96,5 +97,17 @@ export class SlatePluginManager implements PluginManager {
   // 获取所有插件
   getPlugins(): ReadonlyArray<EditorPlugin> {
     return this.plugins
+  }
+
+  //获取自定义命令
+  getCommands() {
+    let allCommands = {};
+     for (const plugin of this.plugins) {
+       if (plugin?.commands) { 
+         Object.assign(allCommands, plugin.commands);
+         
+       }
+     }
+    return allCommands;
   }
 };

@@ -33,13 +33,14 @@ export const createBlockPlugin = ({
   ...rest
 }: Omit<BlockPlugin, 'type'> & {
   format: CustomElementFormat;
-  render: (props: RenderElementProps) => JSX.Element | null;
+  render: (props: RenderElementProps, editor: CustomEditor) => JSX.Element | null;
   shortcut?: {
     key: string;
     modifier: 'ctrlKey' | 'shiftKey' | 'altKey';
   };
   withEditor?: <T extends Editor>(editor: T) => T;
   }): BlockPlugin => {
+
   
   const plugin: BlockPlugin = {
     key,
@@ -48,23 +49,24 @@ export const createBlockPlugin = ({
   };
 
   plugin.withEditor = <T extends Editor>(editor: T): T => {
-    // 添加切换块方法
-    (editor as any)[`toggle${key.charAt(0).toUpperCase() + key.slice(1)}`] =
-      () => {
-        toggleBlock(editor, format);
-      };
-
     // 自定义编辑器增强
     if (customWithEditor) {
       const enhancedEditor = customWithEditor(editor as any) as T;
       return enhancedEditor;
     }
 
+      // 添加切换块方法
+    (editor as any)[`toggle${key.charAt(0).toUpperCase() + key.slice(1)}`] =
+      () => {
+        toggleBlock(editor, format);
+      };
+
+
     return editor;
   };
 
-  plugin.renderElement = ({ attributes, children, element }) => {
-    return render({ attributes, children, element });
+  plugin.renderElement = ({ attributes, children, element },editor) => {
+    return render({ attributes, children, element },editor);
   };
 
   plugin.onKeyDown = (event: React.KeyboardEvent, editor: CustomEditor) => {

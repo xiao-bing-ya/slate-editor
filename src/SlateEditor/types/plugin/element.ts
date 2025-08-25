@@ -1,12 +1,19 @@
-import { Descendant} from 'slate';
+import { Descendant } from 'slate';
+import { CustomText } from "../editor/index";
 export type ParagraphElement = {
     type: 'paragraph'
     align?: string
     children: Descendant[]
 };
 
+export type TableCellElement = { type: 'table-cell'; children: CustomText[] };
+
+export type TableRowElement = { type: 'table-row'; rowSpan?: number; colSoan?: number; children: TableCellElement[] };
+
+export type TableElement = { type: 'table'; children: TableRowElement[] };
+
 // 定制的元素类型
-export type CustomElement = ParagraphElement;  
+export type CustomElement = ParagraphElement |TableCellElement | TableRowElement | TableElement;     
 
 export type CustomElementType = CustomElement['type'];
 

@@ -4,7 +4,8 @@ import {
 } from 'slate';
 import { HistoryEditor } from 'slate-history';
 import { ReactEditor} from 'slate-react';
-import {EditorPlugin } from '../plugin/index';
+import { EditorPlugin } from '../plugin/index';
+import { CustomElement } from '../plugin/element';
 
 // 扩展编辑器类型
 export type CustomEditor = BaseEditor &
@@ -53,7 +54,7 @@ export interface SlateEditorProps {
 declare module 'slate' {
   interface CustomTypes {
     Editor: CustomEditor
-    // Element: CustomElement
+    Element: CustomElement
     Text: CustomText
     // Range: BaseRange & {
     //   [key: string]: unknown

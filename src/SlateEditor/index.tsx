@@ -2,10 +2,18 @@ import React, { useCallback, useMemo } from 'react';
 import { BaseEditor, createEditor, Node, NodeEntry } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, ReactEditor, Slate, withReact } from 'slate-react';
+import {
+  BoldPlugin,
+  InlineCodePlugin,
+  ItalicPlugin,
+  TableCellPlugin,
+  TablePlugin,
+  TableRowPlugin,
+  UnderlinePlugin,
+} from './plugin';
 import { SlatePluginManager } from './plugin/manager';
 import { Banner } from './toolbar';
 import { CustomEditor, SlateEditorProps } from './types/editor/index';
-import { BoldPlugin, ItalicPlugin, UnderlinePlugin,InlineCodePlugin } from "./plugin";
 import { EditorPlugin } from './types/plugin';
 
 const createCustomEditor = (): CustomEditor => {
@@ -14,7 +22,15 @@ const createCustomEditor = (): CustomEditor => {
   ) as CustomEditor;
 };
 
-const builtInPlugins: EditorPlugin[] = [BoldPlugin,ItalicPlugin,UnderlinePlugin,InlineCodePlugin];
+const builtInPlugins: EditorPlugin[] = [
+  BoldPlugin,
+  ItalicPlugin,
+  UnderlinePlugin,
+  InlineCodePlugin,
+  TablePlugin,
+  TableCellPlugin,
+  TableRowPlugin,
+];
 
 const SlateEditor = ({
   readOnly = false,
@@ -23,7 +39,6 @@ const SlateEditor = ({
   plugins = [],
   className,
 }: SlateEditorProps) => {
-
   // 创建插件管理器
   const pluginManager = useMemo(
     () => new SlatePluginManager([...builtInPlugins, ...plugins]),
@@ -70,11 +85,16 @@ const SlateEditor = ({
 
   // 获取插件key 对应的 type 之间的映射
   const Plugin_Key_Type = useMemo(() => {
-    return (pluginManager.getPlugins()??[]).map(plugin => ({
+    return (pluginManager.getPlugins() ?? []).map((plugin) => ({
       key: plugin.key,
-      type:plugin.type
-    }))
-   },[pluginManager,editor])
+      type: plugin.type,
+    }));
+  }, [pluginManager, editor]);
+
+  // 获取插件的自定义命令
+  const CommandOperation = useMemo(() => {
+    return pluginManager.getCommands();
+  }, [pluginManager]);
 
 
   return (
@@ -84,12 +104,12 @@ const SlateEditor = ({
         initialValue={initialValue}
         onChange={handleChange}
       >
-        <Banner pluginsMap={ Plugin_Key_Type} />
+        <Banner pluginsMap={Plugin_Key_Type} CommandOperation={CommandOperation} />
         <Editable
           readOnly={readOnly}
           placeholder={placeholder}
           decorate={decorate}
-          renderElement={renderElement}
+          renderElement={(props)=>renderElement(props,editor)}
           renderLeaf={renderLeaf}
           onKeyDown={handleKeyDown}
         />
